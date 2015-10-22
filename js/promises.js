@@ -31,6 +31,24 @@ $(document).ready(function() {
 
   // Creates a promise that will take delay ms before resolving with the given value
   // Don't worry about how this works, but if you want you're curious feel free to ask!
+
+  $('#fetch-weather').click(function() {
+      var loc = $.getJSON('http://www.ip-api.com/json/').then(function(data) {
+        console.log(data);
+
+        var city = data.city;
+        console.log(city);
+        var weather = $.getJSON('http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=bd82977b86bf27fb59a04b61b657fb6f').then(function(wdata) {
+          console.log(wdata);
+          $('#temp').text(Math.round(wdata.main.temp - 273) + ' C');
+        });
+
+      });
+
+
+  });
+
+
   function promiseFactory(delay, val) {
     function f() {
       var d = $.Deferred();
@@ -46,9 +64,31 @@ $(document).ready(function() {
   }
 
   var quick = promiseFactory(500, 5);
-  // quick(); executes the promise
+  //quick(); executes the promise
   var medium = promiseFactory(1000, 2);
   var slow = promiseFactory(2000, 30)
+
+  $('#serial-promise').click(function() {
+      quick().then(function(first) {
+          medium().then(function(second) {
+              slow().then(function (third) {
+                console.log(first + second + third)
+              })
+          })
+      })
+  });
+
+  $('#parallel-promise').click(function() {
+      quick().then(function(first) {
+        console.log(first);
+      });
+      medium().then(function(second) {
+        console.log(second);
+      });
+      slow().then(function(third) {
+        console.log(third);
+      });
+  });
 
   // $.when(...) {}
 
